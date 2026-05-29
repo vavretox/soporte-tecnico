@@ -62,7 +62,7 @@
                                 <div><strong>Remitente:</strong> {{ $ticket->user?->name ?? 'Sin remitente' }}</div>
                                 <div><strong>Registrado por:</strong> {{ $ticket->creator?->name ?? 'Secretaria DTI' }}</div>
                                 @if($ticket->physical_pdf_path)
-                                    <a href="{{ asset('storage/'.$ticket->physical_pdf_path) }}" target="_blank" class="mt-2 inline-flex items-center gap-2 text-indigo-700 hover:text-indigo-900">
+                                    <a href="{{ route('tickets.physical.pdf', $ticket) }}" target="_blank" class="mt-2 inline-flex items-center gap-2 text-indigo-700 hover:text-indigo-900">
                                         <i class="fas fa-file-pdf"></i>Ver solicitud fisica en PDF
                                     </a>
                                 @endif
@@ -73,8 +73,8 @@
                         @endif
                         @if($ticket->image_path)
                             <div class="mt-3">
-                                <a href="{{ asset('storage/'.$ticket->image_path) }}" target="_blank" class="inline-block">
-                                    <img src="{{ asset('storage/'.$ticket->image_path) }}" alt="Imagen adjunta del ticket"
+                                <a href="{{ route('tickets.image', $ticket) }}" target="_blank" class="inline-block">
+                                    <img src="{{ route('tickets.image', $ticket) }}" alt="Imagen adjunta del ticket"
                                         class="max-h-64 rounded-lg border border-gray-200 shadow-sm">
                                 </a>
                             </div>
@@ -109,8 +109,8 @@
                             <div class="{{ $message->user_id === auth()->id() ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-800' }} rounded-lg p-3">
                                 <div class="text-sm">{!! nl2br(e($message->message)) !!}</div>
                                 @if($message->image_path)
-                                    <a href="{{ asset('storage/'.$message->image_path) }}" target="_blank" class="block mt-3">
-                                        <img src="{{ asset('storage/'.$message->image_path) }}" alt="Imagen adjunta"
+                                    <a href="{{ route('tickets.messages.image', [$ticket, $message]) }}" target="_blank" class="block mt-3">
+                                        <img src="{{ route('tickets.messages.image', [$ticket, $message]) }}" alt="Imagen adjunta"
                                             class="max-h-56 rounded-lg border border-white/30 shadow-sm">
                                     </a>
                                 @endif

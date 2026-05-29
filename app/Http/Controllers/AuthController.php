@@ -46,6 +46,8 @@ class AuthController extends Controller
 
     public function showRegister(): View
     {
+        abort_unless(config('auth.allow_registration'), 404);
+
         $offices = Office::where('is_active', true)->orderBy('name')->get();
 
         return view('auth.register', compact('offices'));
@@ -53,6 +55,8 @@ class AuthController extends Controller
 
     public function register(Request $request): RedirectResponse
     {
+        abort_unless(config('auth.allow_registration'), 404);
+
         $request->merge([
             'email_prefix' => strtolower(trim((string) $request->input('email_prefix'))),
         ]);

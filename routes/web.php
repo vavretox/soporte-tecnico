@@ -36,13 +36,15 @@ Route::middleware(['auth', 'password.change'])->group(function () {
     Route::get('/telegram', [TelegramController::class, 'index'])->name('telegram.index');
     Route::post('/telegram/regenerate', [TelegramController::class, 'regenerate'])->name('telegram.regenerate');
     Route::post('/telegram/sync', [TelegramController::class, 'sync'])->name('telegram.sync');
-    Route::post('/telegram/link-latest', [TelegramController::class, 'linkLatest'])->name('telegram.link-latest');
     Route::delete('/telegram/disconnect', [TelegramController::class, 'disconnect'])->name('telegram.disconnect');
     Route::get('/tickets/create', [TicketController::class, 'create'])->name('tickets.create');
     Route::post('/tickets', [TicketController::class, 'store'])->name('tickets.store');
     Route::get('/tickets/physical/create', [TicketController::class, 'createPhysical'])->name('tickets.physical.create');
     Route::post('/tickets/physical', [TicketController::class, 'storePhysical'])->name('tickets.physical.store');
     Route::get('/tickets/{ticket}/physical/print', [TicketController::class, 'printPhysical'])->name('tickets.physical.print');
+    Route::get('/tickets/{ticket}/attachments/image', [TicketController::class, 'ticketImage'])->name('tickets.image');
+    Route::get('/tickets/{ticket}/attachments/physical-pdf', [TicketController::class, 'physicalPdf'])->name('tickets.physical.pdf');
+    Route::get('/tickets/{ticket}/messages/{message}/image', [TicketController::class, 'messageImage'])->name('tickets.messages.image');
     Route::get('/tickets/{ticket}/messages', [TicketController::class, 'messages'])->name('tickets.messages');
     Route::get('/tickets/{ticket}', [TicketController::class, 'show'])->name('tickets.show');
     Route::post('/tickets/{ticket}/message', [TicketController::class, 'addMessage'])->name('tickets.message');

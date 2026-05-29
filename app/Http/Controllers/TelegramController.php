@@ -42,16 +42,6 @@ class TelegramController extends Controller
         );
     }
 
-    public function linkLatest(TelegramNotifier $telegram): RedirectResponse
-    {
-        $linked = $telegram->linkUserFromLatestPrivateChat(Auth::user());
-
-        return back()->with(
-            $linked ? 'success' : 'error',
-            $linked ? 'Telegram vinculado con el ultimo mensaje recibido por el bot.' : 'No encontre un chat reciente disponible para vincular.'
-        );
-    }
-
     public function disconnect(): RedirectResponse
     {
         Auth::user()->update([

@@ -32,6 +32,8 @@ class ExampleTest extends TestCase
 
     public function test_register_requires_an_office(): void
     {
+        config(['auth.allow_registration' => true]);
+
         $this->post('/register', [
             'name' => 'Funcionario Nuevo',
             'email_prefix' => 'funcionario.nuevo',
@@ -42,11 +44,21 @@ class ExampleTest extends TestCase
 
     public function test_register_requires_institutional_email_format(): void
     {
+        config(['auth.allow_registration' => true]);
+
         $this->post('/register', [
             'name' => 'Funcionario Nuevo',
             'email_prefix' => 'funcionario',
             'password' => 'password123',
             'password_confirmation' => 'password123',
         ])->assertSessionHasErrors('email_prefix');
+    }
+
+    public function test_register_is_disabled_by_default(): void
+    {
+        config(['auth.allow_registration' => false]);
+
+        $this->get('/register')->assertNotFound();
+        $this->post('/register')->assertNotFound();
     }
 }

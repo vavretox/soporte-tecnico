@@ -61,13 +61,6 @@
                 </button>
             </form>
 
-            <form method="POST" action="{{ route('telegram.link-latest') }}">
-                @csrf
-                <button type="submit" class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 font-semibold text-gray-700 hover:bg-gray-50">
-                    <i class="fas fa-link"></i>Usar ultimo mensaje
-                </button>
-            </form>
-
             @if($user->telegram_chat_id)
                 <form method="POST" action="{{ route('telegram.disconnect') }}">
                     @csrf
@@ -80,7 +73,7 @@
         </div>
 
         <div class="rounded-lg border border-gray-200 p-4 text-sm text-gray-600">
-            Para una vinculacion precisa usa el codigo. La opcion de ultimo mensaje toma el chat privado mas reciente recibido por el bot que no este asignado a otro usuario.
+            Por seguridad, la vinculacion solo se completa cuando el bot recibe tu codigo vigente.
         </div>
     </div>
 </div>

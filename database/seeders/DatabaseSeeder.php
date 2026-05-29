@@ -37,14 +37,26 @@ class DatabaseSeeder extends Seeder
             'is_active' => true,
         ]);
 
-        User::create([
-            'name' => 'Administrador',
-            'email' => 'admin@helpdesk.com',
-            'password' => Hash::make('password'),
-            'role' => 'admin',
-            'office_id' => $secretaria->id,
-            'is_active' => true,
-        ]);
+        if (app()->environment(['local', 'testing'])) {
+            User::create([
+                'name' => 'Administrador',
+                'email' => 'admin@helpdesk.com',
+                'password' => Hash::make('password'),
+                'role' => 'admin',
+                'office_id' => $secretaria->id,
+                'is_active' => true,
+            ]);
+        } elseif (filled(env('INITIAL_ADMIN_EMAIL')) && filled(env('INITIAL_ADMIN_PASSWORD'))) {
+            User::create([
+                'name' => env('INITIAL_ADMIN_NAME', 'Administrador'),
+                'email' => env('INITIAL_ADMIN_EMAIL'),
+                'password' => Hash::make(env('INITIAL_ADMIN_PASSWORD')),
+                'must_change_password' => true,
+                'role' => 'admin',
+                'office_id' => $secretaria->id,
+                'is_active' => true,
+            ]);
+        }
 
         Asset::create([
             'asset_tag' => 'HW-0001',
@@ -65,23 +77,25 @@ class DatabaseSeeder extends Seeder
             'is_active' => true,
         ]);
 
-        User::create([
-            'name' => 'Soporte Demo',
-            'email' => 'soporte@helpdesk.com',
-            'password' => Hash::make('password'),
-            'role' => 'support',
-            'office_id' => $direccion->id,
-            'is_active' => true,
-        ]);
+        if (app()->environment(['local', 'testing'])) {
+            User::create([
+                'name' => 'Soporte Demo',
+                'email' => 'soporte@helpdesk.com',
+                'password' => Hash::make('password'),
+                'role' => 'support',
+                'office_id' => $direccion->id,
+                'is_active' => true,
+            ]);
 
-        User::create([
-            'name' => 'Funcionario Demo',
-            'email' => 'user@demo.com',
-            'password' => Hash::make('password'),
-            'role' => 'user',
-            'office_id' => $direccion->id,
-            'is_active' => true,
-        ]);
+            User::create([
+                'name' => 'Funcionario Demo',
+                'email' => 'user@demo.com',
+                'password' => Hash::make('password'),
+                'role' => 'user',
+                'office_id' => $direccion->id,
+                'is_active' => true,
+            ]);
+        }
 
         $infraestructura = Department::create([
             'name' => 'Infraestructura y Telecomunicaciones',

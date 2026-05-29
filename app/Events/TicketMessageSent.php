@@ -46,7 +46,7 @@ class TicketMessageSent implements ShouldBroadcastNow
             'user_name' => $this->message->user->name,
             'user_role' => $this->message->user->role,
             'message' => $this->message->message,
-            'image_url' => $this->message->image_path ? asset('storage/'.$this->message->image_path) : null,
+            'image_url' => $this->message->image_path ? route('tickets.messages.image', [$this->message->ticket, $this->message]) : null,
             'ticket_subject' => $this->message->ticket->subject,
             'ticket_number' => $this->message->ticket->ticket_id,
             'created_at' => $this->message->created_at->format('d/m/Y H:i'),

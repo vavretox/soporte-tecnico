@@ -29,10 +29,12 @@
             </button>
         </form>
 
-        <div class="mt-6 text-sm text-gray-600">
-            No tienes cuenta?
-            <a href="{{ route('register') }}" class="text-blue-600 hover:text-blue-800">Registrate</a>
-        </div>
+        @if(config('auth.allow_registration'))
+            <div class="mt-6 text-sm text-gray-600">
+                No tienes cuenta?
+                <a href="{{ route('register') }}" class="text-blue-600 hover:text-blue-800">Registrate</a>
+            </div>
+        @endif
 
         @env('local')
             <div class="mt-4 p-3 bg-gray-50 rounded-lg text-xs text-gray-600">

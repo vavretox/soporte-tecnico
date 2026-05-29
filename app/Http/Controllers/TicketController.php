@@ -17,6 +17,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
@@ -104,7 +105,7 @@ class TicketController extends Controller
 
         session()->forget('ticket_create_token');
 
-        $imagePath = $request->file('image')?->store('ticket-images', 'public');
+        $imagePath = $request->file('image')?->store('ticket-images', 'local');
         unset($data['image'], $data['request_token']);
 
         $ticket = Ticket::create([
@@ -163,7 +164,7 @@ class TicketController extends Controller
             ]);
         }
 
-        $pdfPath = $request->file('physical_pdf')?->store('ticket-physical-requests', 'public');
+        $pdfPath = $request->file('physical_pdf')?->store('ticket-physical-requests', 'local');
 
         $ticket = Ticket::create([
             'request_channel' => 'physical',
@@ -206,6 +207,31 @@ class TicketController extends Controller
         return view('tickets.print-physical', compact('ticket'));
     }
 
+    public function ticketImage(Ticket $ticket)
+    {
+        abort_unless(Auth::user()->canViewTicket($ticket), 403);
+        abort_unless($ticket->image_path, 404);
+
+        return $this->protectedFileResponse($ticket->image_path);
+    }
+
+    public function physicalPdf(Ticket $ticket)
+    {
+        abort_unless(Auth::user()->canViewTicket($ticket), 403);
+        abort_unless($ticket->request_channel === 'physical' && $ticket->physical_pdf_path, 404);
+
+        return $this->protectedFileResponse($ticket->physical_pdf_path, 'application/pdf');
+    }
+
+    public function messageImage(Ticket $ticket, TicketMessage $message)
+    {
+        abort_unless((int) $message->ticket_id === (int) $ticket->id, 404);
+        abort_unless(Auth::user()->canViewTicket($ticket), 403);
+        abort_unless($message->image_path, 404);
+
+        return $this->protectedFileResponse($message->image_path);
+    }
+
     public function show(Ticket $ticket): View
     {
         abort_unless(Auth::user()->canViewTicket($ticket), 403);
@@ -234,7 +260,7 @@ class TicketController extends Controller
                 'user_name' => $message->user->name,
                 'user_role' => $message->user->role,
                 'message' => $message->message,
-                'image_url' => $message->image_path ? asset('storage/'.$message->image_path) : null,
+                'image_url' => $message->image_path ? route('tickets.messages.image', [$ticket, $message]) : null,
                 'created_at' => $message->created_at->format('d/m/Y H:i'),
             ]);
 
@@ -278,7 +304,7 @@ class TicketController extends Controller
                 'user_name' => $message->user->name,
                 'user_role' => $message->user->role,
                 'message' => $message->message,
-                'image_url' => $message->image_path ? asset('storage/'.$message->image_path) : null,
+                'image_url' => $message->image_path ? route('tickets.messages.image', [$message->ticket, $message]) : null,
                 'ticket_subject' => $message->ticket->subject,
                 'ticket_number' => $message->ticket->ticket_id,
                 'created_at' => $message->created_at->format('d/m/Y H:i'),
@@ -323,7 +349,7 @@ class TicketController extends Controller
             'image' => ['nullable', 'image', 'max:4096'],
         ]);
 
-        $imagePath = $request->file('image')?->store('ticket-images', 'public');
+        $imagePath = $request->file('image')?->store('ticket-images', 'local');
         unset($data['image']);
 
         $message = TicketMessage::create([
@@ -356,7 +382,7 @@ class TicketController extends Controller
                     'user_name' => $message->user->name,
                     'user_role' => $message->user->role,
                     'message' => $message->message,
-                    'image_url' => $message->image_path ? asset('storage/'.$message->image_path) : null,
+                    'image_url' => $message->image_path ? route('tickets.messages.image', [$ticket, $message]) : null,
                     'created_at' => $message->created_at->format('d/m/Y H:i'),
                 ],
             ]);
@@ -427,5 +453,23 @@ class TicketController extends Controller
         $number = $last ? ((int) substr($last, -5)) + 1 : 1;
 
         return $prefix.str_pad((string) $number, 5, '0', STR_PAD_LEFT);
+    }
+
+    private function protectedFileResponse(string $path, ?string $contentType = null)
+    {
+        $resolvedPath = null;
+
+        if (Storage::disk('local')->exists($path)) {
+            $resolvedPath = Storage::disk('local')->path($path);
+        } elseif (Storage::disk('public')->exists($path)) {
+            $resolvedPath = Storage::disk('public')->path($path);
+        }
+
+        abort_unless($resolvedPath && is_file($resolvedPath), 404);
+
+        return response()->file($resolvedPath, array_filter([
+            'Content-Type' => $contentType ?: mime_content_type($resolvedPath) ?: 'application/octet-stream',
+            'X-Content-Type-Options' => 'nosniff',
+        ]));
     }
 }

@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\Ticket;
 use App\Models\User;
-use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -66,39 +65,6 @@ class TelegramNotifier
         }
 
         return $linked;
-    }
-
-    public function linkUserFromLatestPrivateChat(User $user): bool
-    {
-        if (! $this->enabled()) {
-            return false;
-        }
-
-        foreach (array_reverse($this->updates()) as $update) {
-            $message = $update['message'] ?? null;
-            $chat = $message['chat'] ?? null;
-            $date = isset($message['date']) ? Carbon::createFromTimestamp($message['date']) : null;
-
-            if (! $chat || ($chat['type'] ?? '') !== 'private') {
-                continue;
-            }
-
-            if ($date && $date->lt(now()->subHours(24))) {
-                continue;
-            }
-
-            $chatId = (string) $chat['id'];
-
-            if (User::where('telegram_chat_id', $chatId)->whereKeyNot($user->id)->exists()) {
-                continue;
-            }
-
-            $this->linkUser($user, $chatId);
-
-            return true;
-        }
-
-        return false;
     }
 
     private function enabled(): bool

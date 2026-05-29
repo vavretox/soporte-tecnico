@@ -448,7 +448,9 @@
                         </form>
                     @else
                         <a href="{{ route('login') }}" class="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 font-medium text-gray-700 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"><i class="fas fa-right-to-bracket"></i>Ingresar</a>
-                        <a href="{{ route('register') }}" class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-3 py-2 font-semibold text-white shadow-sm hover:bg-blue-700"><i class="fas fa-user-plus"></i>Crear cuenta</a>
+                        @if(config('auth.allow_registration'))
+                            <a href="{{ route('register') }}" class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-3 py-2 font-semibold text-white shadow-sm hover:bg-blue-700"><i class="fas fa-user-plus"></i>Crear cuenta</a>
+                        @endif
                     @endauth
                 </div>
             </div>
