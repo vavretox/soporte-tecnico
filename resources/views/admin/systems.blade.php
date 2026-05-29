@@ -171,14 +171,14 @@ function viewSystem(record) {
     systemViewContent.innerHTML = `
         ${systemDetailBlock('Usuario', record.responsible)}
         ${systemDetailBlock('Cargo', record.position)}
-        <div class="md:col-span-2">${systemDetailBlock('Sistemas', systemsHtml)}</div>
+        <div class="md:col-span-2">${systemDetailBlock('Sistemas', systemsHtml, true)}</div>
         <div class="md:col-span-2">${systemDetailBlock('Notas', record.notes || 'Sin notas')}</div>
     `;
     systemViewModal.classList.remove('hidden');
 }
 
-function systemDetailBlock(label, value) {
-    return '<div class="rounded-lg border border-gray-200 p-3"><div class="text-xs font-semibold uppercase text-gray-500">' + label + '</div><div class="mt-1 text-gray-900">' + value + '</div></div>';
+function systemDetailBlock(label, value, allowHtml = false) {
+    return '<div class="rounded-lg border border-gray-200 p-3"><div class="text-xs font-semibold uppercase text-gray-500">' + escapeHtml(label) + '</div><div class="mt-1 text-gray-900">' + (allowHtml ? value : escapeHtml(value)) + '</div></div>';
 }
 
 function escapeHtml(value) {

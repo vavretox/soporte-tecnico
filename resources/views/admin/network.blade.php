@@ -246,17 +246,17 @@ function viewNetwork(record) {
         ${detailBlock('Cargo', record.position)}
         ${detailBlock('Hostname', record.hostname || 'Sin hostname')}
         ${detailBlock('Conexion', connections)}
-        ${detailBlock('Dispositivos', 'Total: ' + (record.connectedDevices || 0) + '<br>Celulares: ' + (record.mobileDevices || 0) + '<br>PC: ' + (record.pcDevices || 0))}
+        ${detailBlock('Dispositivos', 'Total: ' + (record.connectedDevices || 0) + '<br>Celulares: ' + (record.mobileDevices || 0) + '<br>PC: ' + (record.pcDevices || 0), true)}
         ${detailBlock('Correo electronico', record.hasEmail === '1' ? (record.email || 'Si') : 'No')}
-        <div class="md:col-span-2">${detailBlock('IP y MAC', interfaceHtml)}</div>
+        <div class="md:col-span-2">${detailBlock('IP y MAC', interfaceHtml, true)}</div>
         <div class="md:col-span-2">${detailBlock('Carpetas compartidas', record.hasSharedFolders === '1' ? (record.sharedFolders || 'Si') : 'No')}</div>
         <div class="md:col-span-2">${detailBlock('Notas', record.notes || 'Sin notas')}</div>
     `;
     networkViewModal.classList.remove('hidden');
 }
 
-function detailBlock(label, value) {
-    return '<div class="rounded-lg border border-gray-200 p-3"><div class="text-xs font-semibold uppercase text-gray-500">' + label + '</div><div class="mt-1 text-gray-900">' + value + '</div></div>';
+function detailBlock(label, value, allowHtml = false) {
+    return '<div class="rounded-lg border border-gray-200 p-3"><div class="text-xs font-semibold uppercase text-gray-500">' + escapeHtml(label) + '</div><div class="mt-1 text-gray-900">' + (allowHtml ? value : escapeHtml(value)) + '</div></div>';
 }
 
 function escapeHtml(value) {

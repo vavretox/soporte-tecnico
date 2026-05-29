@@ -16,6 +16,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -45,8 +46,22 @@ class TicketController extends Controller
             ->where('is_active', true)
             ->orderBy('name')
             ->get();
-        $assets = Asset::with('office')->orderBy('name')->get();
-        $suppliers = Supplier::where('is_active', true)->orderBy('name')->get();
+        $user = Auth::user();
+        $assets = Asset::with('office')
+            ->when(! $user->isAgent(), function ($query) use ($user) {
+                $query->where(function ($scope) use ($user) {
+                    $scope->where('assigned_to', $user->id);
+
+                    if ($user->office_id) {
+                        $scope->orWhere('office_id', $user->office_id);
+                    }
+                });
+            })
+            ->orderBy('name')
+            ->get();
+        $suppliers = $user->isAgent()
+            ? Supplier::where('is_active', true)->orderBy('name')->get()
+            : collect();
         $requestToken = (string) Str::uuid();
         session(['ticket_create_token' => $requestToken]);
 
@@ -82,9 +97,29 @@ class TicketController extends Controller
         $data = $request->validate([
             'subject' => ['required', 'string', 'max:255'],
             'department_id' => ['required', 'exists:departments,id'],
-            'category_id' => ['nullable', 'exists:categories,id'],
-            'asset_id' => ['nullable', 'exists:assets,id'],
-            'supplier_id' => ['nullable', 'exists:suppliers,id'],
+            'category_id' => [
+                'nullable',
+                Rule::exists('categories', 'id')->where(fn ($query) => $query->where('department_id', $request->input('department_id'))),
+            ],
+            'asset_id' => [
+                'nullable',
+                Rule::exists('assets', 'id')->where(function ($query) {
+                    $user = Auth::user();
+
+                    if ($user->isAgent()) {
+                        return;
+                    }
+
+                    $query->where(function ($scope) use ($user) {
+                        $scope->where('assigned_to', $user->id);
+
+                        if ($user->office_id) {
+                            $scope->orWhere('office_id', $user->office_id);
+                        }
+                    });
+                }),
+            ],
+            'supplier_id' => ['nullable', Rule::prohibitedIf(! Auth::user()->isAgent()), 'exists:suppliers,id'],
             'priority' => ['required', Rule::in(Ticket::PRIORITIES)],
             'message' => ['required', 'string', 'max:10000'],
             'request_token' => ['required', 'string'],
@@ -166,23 +201,26 @@ class TicketController extends Controller
 
         $pdfPath = $request->file('physical_pdf')?->store('ticket-physical-requests', 'local');
 
-        $ticket = Ticket::create([
-            'request_channel' => 'physical',
-            'internal_cite' => $this->nextInternalCite(),
-            'circular_cite' => $data['circular_cite'],
-            'physical_instructions' => array_map('intval', $data['physical_instructions'] ?? []),
-            'user_id' => $data['user_id'],
-            'created_by_id' => Auth::id(),
-            'department_id' => $data['department_id'],
-            'assigned_to' => $data['assigned_to'],
-            'subject' => $data['reference'],
-            'reference' => $data['reference'],
-            'message' => $data['message'],
-            'physical_pdf_path' => $pdfPath,
-            'status' => 'assigned',
-            'priority' => $data['priority'],
-            'due_at' => Ticket::dueDateForPriority($data['priority']),
-        ]);
+        $year = now()->format('Y');
+        $ticket = Cache::lock("ticket-internal-cite-{$year}", 10)->block(5, function () use ($data, $pdfPath) {
+            return Ticket::create([
+                'request_channel' => 'physical',
+                'internal_cite' => $this->nextInternalCite(),
+                'circular_cite' => $data['circular_cite'],
+                'physical_instructions' => array_map('intval', $data['physical_instructions'] ?? []),
+                'user_id' => $data['user_id'],
+                'created_by_id' => Auth::id(),
+                'department_id' => $data['department_id'],
+                'assigned_to' => $data['assigned_to'],
+                'subject' => $data['reference'],
+                'reference' => $data['reference'],
+                'message' => $data['message'],
+                'physical_pdf_path' => $pdfPath,
+                'status' => 'assigned',
+                'priority' => $data['priority'],
+                'due_at' => Ticket::dueDateForPriority($data['priority']),
+            ]);
+        });
 
         $this->broadcastSafely(new TicketCreated($ticket));
         app(TelegramNotifier::class)->notifyTicketCreated($ticket);

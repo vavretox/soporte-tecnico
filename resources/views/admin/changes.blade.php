@@ -231,7 +231,7 @@ function showCreateChangeFromTicket(ticket) {
     changeRisk.value = 'Pendiente de evaluacion tecnica.';
     changeRollbackPlan.value = 'Pendiente de definir plan de reversa antes de ejecutar el cambio.';
     sourceTicketNotice.classList.remove('hidden');
-    sourceTicketNotice.innerHTML = '<strong>Cambio vinculado al ticket ' + ticket.ticket_id + '</strong><br>Solicitante, tipo de soporte, prioridad, responsable y descripcion fueron sugeridos desde el ticket.';
+    sourceTicketNotice.innerHTML = '<strong>Cambio vinculado al ticket ' + escapeHtml(ticket.ticket_id) + '</strong><br>Solicitante, tipo de soporte, prioridad, responsable y descripcion fueron sugeridos desde el ticket.';
 }
 
 function editChange(change) {
@@ -248,6 +248,10 @@ function editChange(change) {
     changeModal.classList.remove('hidden');
 }
 function closeChangeModal() { changeModal.classList.add('hidden'); }
+
+function escapeHtml(value) {
+    return String(value || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+}
 
 if (sourceTicket) {
     document.addEventListener('DOMContentLoaded', function() {

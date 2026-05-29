@@ -444,7 +444,7 @@
         document.getElementById('bitacoraResult').value = ticket.status === 'closed' ? 'Ticket cerrado.' : 'Ticket resuelto.';
         document.getElementById('bitacoraStatus').value = ticket.status === 'closed' ? 'closed' : 'resolved';
         document.getElementById('sourceTicketNotice').classList.remove('hidden');
-        document.getElementById('sourceTicketNotice').innerHTML = '<strong>Bitacora sugerida desde ticket ' + ticket.ticket_id + '</strong><br>Tipo de soporte, oficina, funcionario y soporte asignado quedan bloqueados desde el ticket.';
+        document.getElementById('sourceTicketNotice').innerHTML = '<strong>Bitacora sugerida desde ticket ' + escapeHtml(ticket.ticket_id) + '</strong><br>Tipo de soporte, oficina, funcionario y soporte asignado quedan bloqueados desde el ticket.';
     }
 
     function editBitacora(bitacora) {
@@ -472,6 +472,10 @@
 
     function closeBitacoraModal() {
         document.getElementById('bitacoraModal').classList.add('hidden');
+    }
+
+    function escapeHtml(value) {
+        return String(value || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
     }
 
     if (sourceTicket) {

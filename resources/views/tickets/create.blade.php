@@ -41,30 +41,34 @@
                 </select>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <div>
-                    <label class="block text-gray-700 font-medium mb-2">Activo relacionado</label>
-                    <select name="asset_id" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
-                        <option value="">No aplica</option>
-                        @foreach($assets as $asset)
-                            <option value="{{ $asset->id }}" {{ old('asset_id') == $asset->id ? 'selected' : '' }}>
-                                {{ $asset->asset_tag }} - {{ $asset->name }} {{ $asset->office ? '('.$asset->office->name.')' : '' }}
-                            </option>
-                        @endforeach
-                    </select>
+            @if($assets->isNotEmpty() || auth()->user()->isAgent())
+                <div class="grid grid-cols-1 {{ auth()->user()->isAgent() ? 'md:grid-cols-2' : '' }} gap-4 mb-4">
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Activo relacionado</label>
+                        <select name="asset_id" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                            <option value="">No aplica</option>
+                            @foreach($assets as $asset)
+                                <option value="{{ $asset->id }}" {{ old('asset_id') == $asset->id ? 'selected' : '' }}>
+                                    {{ $asset->asset_tag }} - {{ $asset->name }} {{ $asset->office ? '('.$asset->office->name.')' : '' }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    @if(auth()->user()->isAgent())
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Proveedor relacionado</label>
+                            <select name="supplier_id" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                                <option value="">No aplica</option>
+                                @foreach($suppliers as $supplier)
+                                    <option value="{{ $supplier->id }}" {{ old('supplier_id') == $supplier->id ? 'selected' : '' }}>
+                                        {{ $supplier->name }} {{ $supplier->rif ? '('.$supplier->rif.')' : '' }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    @endif
                 </div>
-                <div>
-                    <label class="block text-gray-700 font-medium mb-2">Proveedor relacionado</label>
-                    <select name="supplier_id" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
-                        <option value="">No aplica</option>
-                        @foreach($suppliers as $supplier)
-                            <option value="{{ $supplier->id }}" {{ old('supplier_id') == $supplier->id ? 'selected' : '' }}>
-                                {{ $supplier->name }} {{ $supplier->rif ? '('.$supplier->rif.')' : '' }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-            </div>
+            @endif
 
             <div class="mb-4">
                 <label class="block text-gray-700 font-medium mb-2">Mensaje *</label>
@@ -110,15 +114,28 @@
 <script>
     const supportTypes = @json($supportTypes);
 
+    function appendTextLine(container, text, className) {
+        const line = document.createElement('div');
+        if (className) {
+            line.className = className;
+        }
+        line.textContent = text;
+        container.appendChild(line);
+    }
+
     $('#department').change(function() {
         var deptId = $(this).val();
         var support = supportTypes[deptId];
+        var supportInfo = document.getElementById('supportInfo');
         if (support) {
-            $('#supportInfo')
-                .removeClass('hidden')
-                .html('<strong>' + support.name + '</strong><br>' + (support.description || 'Solicitud dirigida a este tipo de soporte.') + '<br><span class="text-blue-700">El administrador o el personal de soporte asignara el tecnico responsable.</span>');
+            supportInfo.classList.remove('hidden');
+            supportInfo.textContent = '';
+            appendTextLine(supportInfo, support.name || 'Tipo de soporte', 'font-semibold');
+            appendTextLine(supportInfo, support.description || 'Solicitud dirigida a este tipo de soporte.');
+            appendTextLine(supportInfo, 'El administrador o el personal de soporte asignara el tecnico responsable.', 'text-blue-700');
         } else {
-            $('#supportInfo').addClass('hidden').empty();
+            supportInfo.classList.add('hidden');
+            supportInfo.textContent = '';
         }
     });
 
