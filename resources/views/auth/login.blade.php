@@ -5,10 +5,10 @@
 @section('content')
 <div class="max-w-md mx-auto px-4">
     <div class="bg-white rounded-lg shadow p-6">
-        <h1 class="text-2xl font-bold mb-2">Ingresar al soporte</h1>
+        <h1 class="text-2xl font-bold mb-2">INGRESAR AL SISTEMA</h1>
         <p class="text-sm text-gray-600 mb-6">Accede para crear tickets, responder mensajes y revisar el estado de tus solicitudes.</p>
 
-        <form method="POST" action="{{ route('login') }}" class="space-y-4">
+        <form method="POST" action="{{ secure_url('/login') }}" class="space-y-4">
             @csrf
             <div>
                 <label class="block text-gray-700 font-medium mb-2">Correo</label>
@@ -30,17 +30,15 @@
         </form>
 
         @if(config('auth.allow_registration'))
-            <div class="mt-6 text-sm text-gray-600">
-                No tienes cuenta?
-                <a href="{{ route('register') }}" class="text-blue-600 hover:text-blue-800">Registrate</a>
+            <div class="mt-6 rounded-lg border border-blue-100 bg-blue-50 p-4 text-sm text-blue-900">
+                <p class="font-semibold">Eres funcionario y necesitas acceso?</p>
+                <p class="mt-1 text-blue-800">Puedes crear tu cuenta desde el registro para ingresar solicitudes de soporte.</p>
+                <a href="{{ route('register') }}" class="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 font-semibold text-white hover:bg-blue-700">
+                    <i class="fas fa-user-plus"></i>
+                    Registrarme como funcionario
+                </a>
             </div>
         @endif
-
-        @env('local')
-            <div class="mt-4 p-3 bg-gray-50 rounded-lg text-xs text-gray-600">
-                Demo: administrador admin@helpdesk.com / password, soporte soporte@helpdesk.com / password, funcionario user@demo.com / password
-            </div>
-        @endenv
     </div>
 </div>
 @endsection

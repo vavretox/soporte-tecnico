@@ -312,6 +312,55 @@
             }
         }
 
+        @media (max-width: 768px) {
+            html,
+            body {
+                overflow-x: hidden;
+            }
+
+            .app-page > .max-w-7xl,
+            .app-page > .max-w-6xl,
+            .app-page > .max-w-5xl,
+            .app-page > .max-w-4xl,
+            .app-page > .max-w-3xl,
+            .app-page > .max-w-2xl,
+            .app-page > .max-w-xl,
+            .app-page > .max-w-lg,
+            .app-page > .max-w-md {
+                padding-left: .875rem;
+                padding-right: .875rem;
+            }
+
+            .app-page table {
+                min-width: 680px;
+            }
+
+            .app-page .grid {
+                min-width: 0;
+            }
+
+            .app-page input,
+            .app-page select,
+            .app-page textarea,
+            .app-page button,
+            .app-page a {
+                max-width: 100%;
+            }
+
+            .avatar-menu {
+                left: 0;
+                right: auto;
+                width: min(18rem, calc(100vw - 1.5rem));
+            }
+
+            #flashToast {
+                left: .75rem;
+                right: .75rem;
+                top: .75rem;
+                width: auto;
+            }
+        }
+
         .bg-blue-50 { background-color: #f0fdf4 !important; }
         .bg-blue-100 { background-color: #dcfce7 !important; }
         .bg-blue-500 { background-color: #22a34a !important; }
@@ -376,16 +425,16 @@
 <body class="app-shell min-h-screen bg-gray-100 text-gray-900">
     <div id="scrollProgress" class="scroll-progress"></div>
     <nav class="bg-white border-b border-gray-200 shadow-sm">
-        <div class="px-4 py-3">
+        <div class="px-3 py-3 sm:px-4">
             <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                <a href="{{ auth()->check() ? (auth()->user()->isAgent() ? route('admin.dashboard') : route('tickets.index')) : route('login') }}" class="inline-flex items-center gap-3 font-bold text-lg text-emerald-800 hover:text-green-700">
+                <a href="{{ auth()->check() ? (auth()->user()->isAgent() ? route('admin.dashboard') : route('tickets.index')) : route('login') }}" class="inline-flex min-w-0 items-center gap-3 font-bold text-lg text-emerald-800 hover:text-green-700">
                     @if(file_exists(public_path('images/logo-gadt.png')))
                         <img src="{{ asset('images/logo-gadt.png') }}" alt="Gobierno Autonomo Departamental de Tarija" class="h-11 w-auto object-contain">
                     @endif
-                    <span class="leading-tight">Sistema de Helpdesk Soporte Tecnico DTI GADT</span>
+                    <span class="min-w-0 leading-tight break-words">Sistema de Helpdesk Soporte Tecnico DTI GADT</span>
                 </a>
 
-                <div class="flex flex-wrap items-center gap-2 text-sm">
+                <div class="flex w-full flex-wrap items-center gap-2 text-sm lg:w-auto lg:justify-end">
                     @auth
                         @php
                             $roleLabel = match (auth()->user()->role) {
@@ -404,7 +453,7 @@
                             ['icon' => 'seedling', 'color' => 'rose', 'class' => 'fa-seedling bg-rose-100 text-rose-700'],
                         ])
                         <details class="avatar-picker relative">
-                            <summary class="list-none inline-flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 hover:border-green-200 hover:bg-green-50">
+                            <summary class="list-none inline-flex max-w-full cursor-pointer items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 hover:border-green-200 hover:bg-green-50">
                                 @if(auth()->user()->avatarUrl())
                                     <img src="{{ auth()->user()->avatarUrl() }}" alt="Avatar de {{ auth()->user()->name }}" class="h-9 w-9 rounded-full object-cover">
                                 @else
@@ -412,8 +461,8 @@
                                         <i class="fas {{ auth()->user()->avatarIconClass() }}"></i>
                                     </span>
                                 @endif
-                                <span class="leading-tight text-left">
-                                    <span class="block font-semibold text-gray-900">{{ auth()->user()->name }}</span>
+                                <span class="min-w-0 leading-tight text-left">
+                                    <span class="block max-w-[10rem] truncate font-semibold text-gray-900 sm:max-w-[14rem]">{{ auth()->user()->name }}</span>
                                     <span class="block text-xs text-gray-500">{{ $roleLabel }}</span>
                                 </span>
                                 <i class="fas fa-chevron-down text-xs text-gray-400"></i>
@@ -440,7 +489,7 @@
                                 </form>
                             </div>
                         </details>
-                        <form method="POST" action="{{ route('logout') }}" class="inline-flex">
+                        <form method="POST" action="{{ secure_url('/logout') }}" class="inline-flex">
                             @csrf
                             <button type="submit" class="inline-flex items-center gap-2 rounded-lg border border-red-100 bg-red-50 px-3 py-2 font-medium text-red-700 hover:bg-red-100">
                                 <i class="fas fa-right-from-bracket"></i>Salir
