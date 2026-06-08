@@ -30,6 +30,8 @@
         </div>
 
         <div class="p-6">
+            @include('tickets.partials.rustdesk-panel')
+
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 pb-6 border-b">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Cambiar Estado</label>

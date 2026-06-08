@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\KnowledgeController;
+use App\Http\Controllers\RustDeskSessionController;
 use App\Http\Controllers\TelegramController;
 use App\Http\Controllers\TicketController;
 use App\Models\Category;
@@ -49,6 +50,11 @@ Route::middleware(['auth', 'password.change'])->group(function () {
     Route::get('/tickets/{ticket}', [TicketController::class, 'show'])->name('tickets.show');
     Route::post('/tickets/{ticket}/message', [TicketController::class, 'addMessage'])->name('tickets.message');
     Route::post('/tickets/{ticket}/close', [TicketController::class, 'close'])->name('tickets.close');
+    Route::post('/tickets/{ticket}/rustdesk-sessions', [RustDeskSessionController::class, 'store'])->name('rustdesk.sessions.store');
+    Route::post('/tickets/{ticket}/rustdesk-sessions/{rustdeskSession}/accept', [RustDeskSessionController::class, 'accept'])->name('rustdesk.sessions.accept');
+    Route::post('/tickets/{ticket}/rustdesk-sessions/{rustdeskSession}/start', [RustDeskSessionController::class, 'start'])->name('rustdesk.sessions.start');
+    Route::post('/tickets/{ticket}/rustdesk-sessions/{rustdeskSession}/complete', [RustDeskSessionController::class, 'complete'])->name('rustdesk.sessions.complete');
+    Route::post('/tickets/{ticket}/rustdesk-sessions/{rustdeskSession}/cancel', [RustDeskSessionController::class, 'cancel'])->name('rustdesk.sessions.cancel');
 });
 
 Route::middleware(['auth', 'password.change'])->prefix('admin')->group(function () {

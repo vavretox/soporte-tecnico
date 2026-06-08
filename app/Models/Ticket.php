@@ -151,6 +151,11 @@ class Ticket extends Model
         return $this->hasMany(ChangeRecord::class);
     }
 
+    public function rustDeskSessions(): HasMany
+    {
+        return $this->hasMany(RustDeskSession::class);
+    }
+
     public function scopeVisibleTo(Builder $query, User $user): Builder
     {
         if ($user->isAdmin()) {

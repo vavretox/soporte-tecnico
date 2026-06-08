@@ -32,6 +32,8 @@ class User extends Authenticatable
         'office_id',
         'department_id',
         'telegram_chat_id',
+        'rustdesk_id',
+        'rustdesk_alias',
         'telegram_link_code',
         'telegram_linked_at',
         'is_active',
@@ -118,6 +120,21 @@ class User extends Authenticatable
     public function messages(): HasMany
     {
         return $this->hasMany(TicketMessage::class);
+    }
+
+    public function rustDeskSessionsRequested(): HasMany
+    {
+        return $this->hasMany(RustDeskSession::class, 'requester_id');
+    }
+
+    public function rustDeskSessionsAsTarget(): HasMany
+    {
+        return $this->hasMany(RustDeskSession::class, 'target_user_id');
+    }
+
+    public function rustDeskSessionsAsTechnician(): HasMany
+    {
+        return $this->hasMany(RustDeskSession::class, 'technician_id');
     }
 
     public function bitacoras(): HasMany

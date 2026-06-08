@@ -1004,8 +1004,10 @@ class AdminController extends Controller
         $this->authorizeAgent();
         abort_unless($this->canSeeTicket($ticket), 403);
 
-        $ticket->load(['user', 'department', 'category', 'assignee', 'asset', 'supplier', 'creator']);
+        $ticket->load(['user', 'department', 'category', 'assignee', 'asset', 'supplier', 'creator', 'rustDeskSessions.requester', 'rustDeskSessions.targetUser', 'rustDeskSessions.technician']);
         $messages = $ticket->messages()->with('user')->oldest()->get();
+        $rustDeskSessions = $ticket->rustDeskSessions->sortByDesc('created_at');
+        $rustDeskActiveSession = $rustDeskSessions->first(fn ($session) => $session->isOpen());
         $agents = User::with('supportDepartments')
             ->whereIn('role', ['admin', 'support'])
             ->where('is_active', true)
@@ -1027,7 +1029,7 @@ class AdminController extends Controller
             ->where('is_read', false)
             ->update(['is_read' => true]);
 
-        return view('admin.ticket-show', compact('ticket', 'messages', 'agents', 'cannedResponses'));
+        return view('admin.ticket-show', compact('ticket', 'messages', 'agents', 'cannedResponses', 'rustDeskSessions', 'rustDeskActiveSession'));
     }
 
     public function assignTicket(Request $request, Ticket $ticket): RedirectResponse
@@ -1270,6 +1272,8 @@ class AdminController extends Controller
             'department_ids' => ['nullable', 'array'],
             'department_ids.*' => ['exists:departments,id'],
             'telegram_chat_id' => ['nullable', 'string', 'max:80'],
+            'rustdesk_id' => ['nullable', 'string', 'max:80'],
+            'rustdesk_alias' => ['nullable', 'string', 'max:255'],
             'is_active' => ['nullable', 'boolean'],
         ]);
 
@@ -1292,6 +1296,8 @@ class AdminController extends Controller
             'office_id' => $data['office_id'] ?? null,
             'department_id' => $data['department_ids'][0] ?? null,
             'telegram_chat_id' => $data['telegram_chat_id'] ?? null,
+            'rustdesk_id' => $data['rustdesk_id'] ?? null,
+            'rustdesk_alias' => $data['rustdesk_alias'] ?? null,
             'is_active' => $request->boolean('is_active'),
         ]);
 
@@ -1317,6 +1323,8 @@ class AdminController extends Controller
             'department_ids' => ['nullable', 'array'],
             'department_ids.*' => ['exists:departments,id'],
             'telegram_chat_id' => ['nullable', 'string', 'max:80'],
+            'rustdesk_id' => ['nullable', 'string', 'max:80'],
+            'rustdesk_alias' => ['nullable', 'string', 'max:255'],
             'is_active' => ['nullable', 'boolean'],
         ]);
 
@@ -1335,6 +1343,8 @@ class AdminController extends Controller
             'office_id' => $data['office_id'] ?? null,
             'department_id' => $data['role'] === 'support' ? ($data['department_ids'][0] ?? null) : null,
             'telegram_chat_id' => $data['telegram_chat_id'] ?? null,
+            'rustdesk_id' => $data['rustdesk_id'] ?? null,
+            'rustdesk_alias' => $data['rustdesk_alias'] ?? null,
             'is_active' => $request->boolean('is_active'),
         ];
 

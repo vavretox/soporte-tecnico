@@ -30,6 +30,7 @@
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Oficina</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tipo asignado</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Telegram</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">RustDesk</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Contrasena</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actividad</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
@@ -81,6 +82,18 @@
                             @endif
                         </td>
                         <td class="px-6 py-4 text-sm">
+                            @if($user->rustdesk_id)
+                                <span class="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-1 text-xs font-medium text-emerald-800">
+                                    <i class="fas fa-desktop"></i> {{ $user->rustdesk_id }}
+                                </span>
+                                @if($user->rustdesk_alias)
+                                    <div class="mt-1 text-xs text-gray-500">{{ $user->rustdesk_alias }}</div>
+                                @endif
+                            @else
+                                <span class="text-xs text-gray-400">Sin registrar</span>
+                            @endif
+                        </td>
+                        <td class="px-6 py-4 text-sm">
                             @if($user->must_change_password)
                                 <span class="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-1 text-xs font-medium text-amber-800">
                                     <i class="fas fa-key"></i> Temporal
@@ -112,6 +125,8 @@
                                 data-office-id="{{ $user->office_id }}"
                                 data-department-ids='@json($user->supportDepartmentIds())'
                                 data-telegram-chat-id="{{ e($user->telegram_chat_id) }}"
+                                data-rustdesk-id="{{ e($user->rustdesk_id) }}"
+                                data-rustdesk-alias="{{ e($user->rustdesk_alias) }}"
                                 data-active="{{ $user->is_active ? '1' : '0' }}"
                                 onclick="editUser(this.dataset)"
                                 class="text-blue-600 hover:text-blue-800 mr-3" title="Editar">
@@ -222,6 +237,15 @@
                     <p class="text-xs text-gray-500 mt-1">Solo administradores y soporte con este dato recibiran avisos.</p>
                 </div>
                 <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">ID RustDesk</label>
+                    <input type="text" name="rustdesk_id" id="userRustDeskId" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Ej: 123 456 789">
+                    <p class="text-xs text-gray-500 mt-1">ID del cliente RustDesk instalado en el equipo del funcionario.</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Alias RustDesk</label>
+                    <input type="text" name="rustdesk_alias" id="userRustDeskAlias" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Ej: PC Recepcion Planta Baja">
+                </div>
+                <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Contrasena *</label>
                     <input type="password" name="password" id="userPassword" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
                 </div>
@@ -256,6 +280,8 @@
         document.getElementById('userOffice').value = '';
         setUserDepartments([]);
         document.getElementById('userTelegramChatId').value = '';
+        document.getElementById('userRustDeskId').value = '';
+        document.getElementById('userRustDeskAlias').value = '';
         document.getElementById('userPassword').value = '';
         document.getElementById('userPasswordConfirmation').value = '';
         document.getElementById('userPassword').required = true;
@@ -277,6 +303,8 @@
         document.getElementById('userOffice').value = user.officeId || '';
         setUserDepartments(JSON.parse(user.departmentIds || '[]'));
         document.getElementById('userTelegramChatId').value = user.telegramChatId || '';
+        document.getElementById('userRustDeskId').value = user.rustdeskId || '';
+        document.getElementById('userRustDeskAlias').value = user.rustdeskAlias || '';
         document.getElementById('userPassword').value = '';
         document.getElementById('userPasswordConfirmation').value = '';
         document.getElementById('userPassword').required = false;

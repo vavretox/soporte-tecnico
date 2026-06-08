@@ -39,6 +39,8 @@
         </div>
 
         <div class="p-6">
+            @include('tickets.partials.rustdesk-panel')
+
             <div class="mb-6 pb-6 border-b">
                 <div class="flex items-start space-x-3">
                     <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">

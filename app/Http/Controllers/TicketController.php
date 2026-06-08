@@ -274,10 +274,12 @@ class TicketController extends Controller
     {
         abort_unless(Auth::user()->canViewTicket($ticket), 403);
 
-        $ticket->load(['user', 'department', 'category', 'assignee', 'asset', 'supplier', 'creator']);
+        $ticket->load(['user', 'department', 'category', 'assignee', 'asset', 'supplier', 'creator', 'rustDeskSessions.requester', 'rustDeskSessions.targetUser', 'rustDeskSessions.technician']);
         $messages = $ticket->messages()->with('user')->oldest()->get();
+        $rustDeskSessions = $ticket->rustDeskSessions->sortByDesc('created_at');
+        $rustDeskActiveSession = $rustDeskSessions->first(fn ($session) => $session->isOpen());
 
-        return view('tickets.show', compact('ticket', 'messages'));
+        return view('tickets.show', compact('ticket', 'messages', 'rustDeskSessions', 'rustDeskActiveSession'));
     }
 
     public function messages(Request $request, Ticket $ticket): JsonResponse
