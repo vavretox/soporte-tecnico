@@ -256,18 +256,95 @@
             box-shadow: 0 0 0 3px rgba(34, 163, 74, .16);
         }
 
+        .app-page,
+        .app-page .rounded-lg,
+        .fixed.inset-0:not(.hidden) > .relative,
+        #flashToast {
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
+
+        .app-page li,
+        .app-page p,
+        .app-page td,
+        .app-page th,
+        .app-page label,
+        .app-page div {
+            min-width: 0;
+        }
+
+
+        .app-page table {
+            min-width: 1100px;
+            table-layout: auto;
+            width: 100%;
+        }
+
+        .app-page .overflow-x-auto > table,
+        .app-page .overflow-x-auto > .min-w-full {
+            min-width: max(100%, 1100px);
+        }
+
+        .app-page th,
+        .app-page th *,
+        .app-page td,
+        .app-page td * {
+            overflow-wrap: normal !important;
+            word-break: normal !important;
+        }
+
+        .app-page th {
+            white-space: nowrap;
+        }
+
+        .app-page td {
+            vertical-align: middle;
+        }
+
+        .app-page .bg-white.overflow-hidden:has(table),
+        .app-page .rounded-lg.overflow-hidden:has(table) {
+            overflow-x: auto;
+        }
+
         .fixed.inset-0:not(.hidden) {
+            align-items: center;
             backdrop-filter: blur(6px);
+            box-sizing: border-box;
+            display: flex;
+            justify-content: center;
+            overflow: hidden;
+            overscroll-behavior: contain;
+            padding: .75rem;
         }
 
         .fixed.inset-0:not(.hidden) > .relative {
             animation: modalIn .22s var(--ui-ease) both;
-            max-height: calc(100vh - 3rem);
+            margin: 0 auto;
+            max-height: calc(100dvh - 1.5rem);
             overflow-y: auto;
+            top: auto !important;
+        }
+
+        @media (max-height: 640px) {
+            .fixed.inset-0:not(.hidden) {
+                align-items: flex-start;
+            }
         }
 
         .fixed.inset-0:not(.hidden) > .relative::-webkit-scrollbar {
             width: 8px;
+        }
+
+        .fixed.inset-0:not(.hidden) form > .flex.justify-end:last-child,
+        .fixed.inset-0:not(.hidden) > .relative > .flex.justify-end:last-child {
+            background: linear-gradient(180deg, rgba(255, 255, 255, .88), #fff 36%);
+            border-top: 1px solid var(--line);
+            bottom: 0;
+            margin: 1.5rem -1.25rem -1.25rem;
+            padding: 1rem 1.25rem;
+            position: sticky;
+            z-index: 2;
         }
 
         #flashToast {
@@ -304,7 +381,7 @@
             }
 
             .app-page table {
-                min-width: 760px;
+                min-width: 960px;
             }
 
             .app-shell nav .text-lg {
@@ -332,7 +409,7 @@
             }
 
             .app-page table {
-                min-width: 680px;
+                min-width: 960px;
             }
 
             .app-page .grid {
@@ -489,7 +566,7 @@
                                 </form>
                             </div>
                         </details>
-                        <form method="POST" action="{{ secure_url('/logout') }}" class="inline-flex">
+                        <form method="POST" action="{{ route('logout') }}" class="inline-flex">
                             @csrf
                             <button type="submit" class="inline-flex items-center gap-2 rounded-lg border border-red-100 bg-red-50 px-3 py-2 font-medium text-red-700 hover:bg-red-100">
                                 <i class="fas fa-right-from-bracket"></i>Salir
@@ -580,10 +657,10 @@
 
         @if($errors->any())
             <div class="max-w-7xl mx-auto px-4 mb-4">
-                <div class="bg-red-100 border border-red-200 text-red-800 px-4 py-3 rounded-lg">
-                    <ul class="list-disc list-inside">
+                <div class="bg-red-100 border border-red-200 text-red-800 px-4 py-3 rounded-lg break-words">
+                    <ul class="list-disc space-y-1 pl-5 text-sm leading-6">
                         @foreach($errors->all() as $error)
-                            <li>{{ $error }}</li>
+                            <li class="break-words whitespace-normal">{{ $error }}</li>
                         @endforeach
                     </ul>
                 </div>
@@ -688,6 +765,8 @@
                 }
 
                 document.body.classList.add('overflow-hidden');
+                target.scrollTop = 0;
+                target.querySelector('.relative')?.scrollTo({ top: 0, behavior: 'auto' });
                 window.setTimeout(function() {
                     var focusable = target.querySelector('input:not([type="hidden"]):not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled])');
                     focusable?.focus({ preventScroll: true });

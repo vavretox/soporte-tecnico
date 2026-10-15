@@ -48,6 +48,19 @@ class UserVisibilityTest extends TestCase
         $this->assertFalse($support->canViewTicket(new Ticket(['user_id' => 2, 'department_id' => 30])));
     }
 
+    public function test_support_can_view_own_digital_ticket_outside_assigned_departments(): void
+    {
+        $support = (new User())->forceFill(['id' => 7, 'role' => 'support', 'department_id' => 10]);
+        $ticket = new Ticket([
+            'request_channel' => 'digital',
+            'user_id' => 7,
+            'assigned_to' => null,
+            'department_id' => 30,
+        ]);
+
+        $this->assertTrue($support->canViewTicket($ticket));
+    }
+
     public function test_regular_user_only_views_own_records(): void
     {
         $user = (new User())->forceFill(['id' => 5, 'role' => 'user']);

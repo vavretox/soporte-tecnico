@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Office;
 use App\Models\User;
+use App\Services\CiudadaniaDigitalAuth;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
@@ -42,6 +45,61 @@ class AuthController extends Controller
         return auth()->user()->isAgent()
             ? redirect()->route('admin.dashboard')
             : redirect()->route('tickets.index');
+    }
+
+    public function redirectToCiudadaniaDigital(Request $request, CiudadaniaDigitalAuth $ciudadaniaDigital): RedirectResponse
+    {
+        try {
+            return redirect()->away($ciudadaniaDigital->authorizationUrl($request));
+        } catch (ValidationException $exception) {
+            Log::warning('Ciudadania Digital redirect failed.', [
+                'errors' => $exception->errors(),
+            ]);
+
+            return redirect()->route('login')
+                ->withErrors($exception->errors())
+                ->with('ciudadania_digital_error', collect($exception->errors())->flatten()->first());
+        }
+    }
+
+    public function handleCiudadaniaDigitalCallback(Request $request, CiudadaniaDigitalAuth $ciudadaniaDigital): RedirectResponse
+    {
+        try {
+            $user = $ciudadaniaDigital->loginFromCallback($request);
+        } catch (ValidationException $exception) {
+            Log::warning('Ciudadania Digital callback failed.', [
+                'has_code' => $request->filled('code'),
+                'has_error' => $request->filled('error'),
+                'has_state' => $request->filled('state'),
+                'has_nonce' => $request->filled('nonce'),
+                'errors' => $exception->errors(),
+            ]);
+
+            return redirect()->route('login')
+                ->withErrors($exception->errors())
+                ->with('ciudadania_digital_error', collect($exception->errors())->flatten()->first());
+        }
+
+        return $user->isAgent()
+            ? redirect()->route('admin.dashboard')->with('success', 'Ingreso con Ciudadania Digital correcto.')
+            : redirect()->route('tickets.index')->with('success', 'Ingreso con Ciudadania Digital correcto.');
+    }
+
+    public function adminDashboard(Request $request, CiudadaniaDigitalAuth $ciudadaniaDigital, AdminController $adminController): RedirectResponse|View|Response
+    {
+        if ($request->hasAny(['code', 'error']) && $request->has('state')) {
+            return $this->handleCiudadaniaDigitalCallback($request, $ciudadaniaDigital);
+        }
+
+        if (! Auth::check()) {
+            return redirect()->route('login');
+        }
+
+        if ($request->user()->must_change_password) {
+            return redirect()->route('password.change');
+        }
+
+        return $adminController->dashboard();
     }
 
     public function showRegister(): View

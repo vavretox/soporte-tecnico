@@ -171,6 +171,14 @@ class Ticket extends Model
                 if ($departmentIds) {
                     $scope->orWhereIn('department_id', $departmentIds);
                 }
+
+                $scope->orWhere(function (Builder $ownDigital) use ($user) {
+                    $ownDigital->where('request_channel', 'digital')
+                        ->where(function (Builder $owner) use ($user) {
+                            $owner->where('user_id', $user->id)
+                                ->orWhere('created_by_id', $user->id);
+                        });
+                });
             });
         }
 

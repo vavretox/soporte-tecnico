@@ -3,7 +3,7 @@
 @section('title', 'Panel de Administracion')
 
 @section('content')
-<div class="max-w-7xl mx-auto px-4">
+<div class="w-full max-w-none px-4 lg:px-6">
     <h1 class="text-2xl font-bold mb-6">Panel de Control</h1>
 
     <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-7 gap-4 mb-8">

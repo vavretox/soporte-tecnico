@@ -13,8 +13,12 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->trustProxies(at: '*');
+        $middleware->web(append: [
+            \App\Http\Middleware\HandleCiudadaniaDigitalCallback::class,
+        ]);
 
         $middleware->alias([
+            'ciudadania.callback' => \App\Http\Middleware\HandleCiudadaniaDigitalCallback::class,
             'password.change' => \App\Http\Middleware\RequirePasswordChange::class,
         ]);
     })

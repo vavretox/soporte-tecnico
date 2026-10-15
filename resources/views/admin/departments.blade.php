@@ -3,7 +3,7 @@
 @section('title', 'Tipos de Soporte')
 
 @section('content')
-<div class="max-w-7xl mx-auto px-4">
+<div class="w-full max-w-none px-4 lg:px-6">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold">Tipos de Soporte</h1>
         <button onclick="showCreateModal()" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">

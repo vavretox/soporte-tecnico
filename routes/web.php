@@ -15,8 +15,11 @@ Route::get('/', function () {
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
+Route::get('/auth/ciudadania/redirect', [AuthController::class, 'redirectToCiudadaniaDigital'])->name('ciudadania.redirect');
+Route::get('/auth/ciudadania/callback', [AuthController::class, 'handleCiudadaniaDigitalCallback'])->name('ciudadania.callback');
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
 Route::post('/register', [AuthController::class, 'register']);
+Route::get('/logout', [AuthController::class, 'logout']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/api/categories/{department}', function ($departmentId) {
@@ -28,7 +31,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/password/change', [AuthController::class, 'updatePassword'])->name('password.update');
 });
 
-Route::middleware(['auth', 'password.change'])->group(function () {
+Route::middleware(['ciudadania.callback', 'auth', 'password.change'])->group(function () {
     Route::post('/profile/avatar', [AuthController::class, 'updateAvatar'])->name('profile.avatar');
     Route::get('/dashboard', [TicketController::class, 'index'])->name('tickets.index');
     Route::get('/notifications/messages', [TicketController::class, 'globalMessages'])->name('notifications.messages');
@@ -57,8 +60,9 @@ Route::middleware(['auth', 'password.change'])->group(function () {
     Route::post('/tickets/{ticket}/rustdesk-sessions/{rustdeskSession}/cancel', [RustDeskSessionController::class, 'cancel'])->name('rustdesk.sessions.cancel');
 });
 
-Route::middleware(['auth', 'password.change'])->prefix('admin')->group(function () {
-    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+Route::get('/admin/dashboard', [AuthController::class, 'adminDashboard'])->name('admin.dashboard');
+
+Route::middleware(['ciudadania.callback', 'auth', 'password.change'])->prefix('admin')->group(function () {
     Route::get('/tickets', [AdminController::class, 'tickets'])->name('admin.tickets');
     Route::get('/tickets/{ticket}', [AdminController::class, 'showTicket'])->name('admin.ticket.show');
     Route::post('/tickets/{ticket}/assign', [AdminController::class, 'assignTicket'])->name('admin.ticket.assign');
@@ -122,6 +126,7 @@ Route::middleware(['auth', 'password.change'])->prefix('admin')->group(function 
     Route::post('/support/{user}/demote', [AdminController::class, 'demoteFromSupport'])->name('admin.support.demote');
 
     Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
+    Route::get('/users/export', [AdminController::class, 'exportUsers'])->name('admin.users.export');
     Route::post('/users', [AdminController::class, 'storeUser'])->name('admin.users.store');
     Route::put('/users/{user}', [AdminController::class, 'updateUser'])->name('admin.users.update');
     Route::delete('/users/{user}', [AdminController::class, 'deleteUser'])->name('admin.users.delete');

@@ -3,7 +3,7 @@
 @section('title', 'Gestionar Soporte')
 
 @section('content')
-<div class="max-w-7xl mx-auto px-4">
+<div class="w-full max-w-none px-4 lg:px-6">
     <h1 class="text-2xl font-bold mb-6">Gestionar Personal de Soporte</h1>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">

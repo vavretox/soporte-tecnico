@@ -134,7 +134,14 @@ class RustDeskSessionController extends Controller
     {
         $this->authorizeSession($ticket, $rustdeskSession);
         abort_unless($this->canCancel($rustdeskSession), 403);
-        abort_unless($rustdeskSession->isOpen(), 422);
+
+        if (! $rustdeskSession->isOpen()) {
+            $message = $rustdeskSession->status === 'cancelled'
+                ? 'La solicitud RustDesk ya estaba cancelada.'
+                : 'La sesion RustDesk ya fue completada y no puede cancelarse.';
+
+            return back()->with('error', $message);
+        }
 
         $rustdeskSession->update(['status' => 'cancelled']);
 

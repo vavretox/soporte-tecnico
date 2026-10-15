@@ -3,7 +3,7 @@
 @section('title', 'Auditoria')
 
 @section('content')
-<div class="max-w-7xl mx-auto px-4">
+<div class="w-full max-w-none px-4 lg:px-6">
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
         <div>
             <h1 class="text-2xl font-bold">Auditoria del sistema</h1>

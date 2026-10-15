@@ -41,4 +41,16 @@ return [
         'enabled' => env('TELEGRAM_NOTIFICATIONS_ENABLED', true),
     ],
 
+    'ciudadania_digital' => [
+        'enabled' => env('CIUDADANIA_DIGITAL_ENABLED', false),
+        'issuer' => env('CIUDADANIA_DIGITAL_ISSUER', 'https://proveedor.ciudadania.demo.agetic.gob.bo'),
+        'client_id' => env('CIUDADANIA_DIGITAL_CLIENT_ID'),
+        'client_secret' => env('CIUDADANIA_DIGITAL_CLIENT_SECRET'),
+        'redirect_uri' => env('CIUDADANIA_DIGITAL_REDIRECT_URI'),
+        'post_logout_redirect_uri' => env('CIUDADANIA_DIGITAL_POST_LOGOUT_REDIRECT_URI'),
+        'scope' => env('CIUDADANIA_DIGITAL_SCOPE', 'openid profile email'),
+        'prompt' => env('CIUDADANIA_DIGITAL_PROMPT'),
+        'timeout' => env('CIUDADANIA_DIGITAL_TIMEOUT', 12),
+    ],
+
 ];

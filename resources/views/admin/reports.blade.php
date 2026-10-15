@@ -100,7 +100,7 @@
 @endpush
 
 @section('content')
-<div class="max-w-7xl mx-auto px-4">
+<div class="w-full max-w-none px-4 lg:px-6">
     @php
         $periodLabel = match ($period) {
             'month' => 'Mes: '.request('month', now()->format('Y-m')),

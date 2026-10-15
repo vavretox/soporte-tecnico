@@ -72,7 +72,7 @@
 @endpush
 
 @section('content')
-<div class="print-report max-w-7xl mx-auto px-4">
+<div class="print-report w-full max-w-none px-4 lg:px-6">
     <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
         <div>
             <h1 class="text-2xl font-bold">Reporte de tickets atendidos</h1>

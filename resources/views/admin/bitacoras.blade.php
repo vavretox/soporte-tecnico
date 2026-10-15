@@ -3,7 +3,7 @@
 @section('title', 'Bitacoras')
 
 @section('content')
-<div class="max-w-7xl mx-auto px-4">
+<div class="w-full max-w-none px-4 lg:px-6">
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
         <div>
             <h1 class="text-2xl font-bold">Bitacoras</h1>
@@ -155,7 +155,7 @@
 </div>
 
 <div id="bitacoraDetailsModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50">
-    <div class="relative top-10 mx-auto p-5 border w-full max-w-4xl shadow-lg rounded-md bg-white">
+    <div class="relative top-10 mx-auto p-5 border w-full max-w-5xl shadow-lg rounded-md bg-white">
         <div class="flex justify-between items-start gap-4 mb-4">
             <div>
                 <h3 class="text-lg font-semibold">Informacion de Bitacora</h3>
@@ -166,8 +166,8 @@
             </button>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="md:col-span-2 rounded-lg border border-gray-200 p-3">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="md:col-span-4 rounded-lg border border-gray-200 p-3">
                 <div class="text-xs font-semibold uppercase text-gray-500">Asunto</div>
                 <div id="detailTitle" class="mt-1 text-sm font-medium text-gray-900"></div>
             </div>
@@ -227,7 +227,7 @@
 </div>
 
 <div id="bitacoraModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50">
-    <div class="relative top-6 mx-auto p-5 border w-full max-w-4xl shadow-lg rounded-md bg-white">
+    <div class="relative top-6 mx-auto p-5 border w-full max-w-6xl shadow-lg rounded-md bg-white">
         <div class="flex justify-between items-center mb-4">
             <h3 id="bitacoraModalTitle" class="text-lg font-medium">Nueva Bitacora</h3>
             <button onclick="closeBitacoraModal()" class="text-gray-400 hover:text-gray-600" title="Cerrar">
@@ -245,7 +245,7 @@
             <input type="hidden" name="location" id="lockedBitacoraLocation" disabled>
             <input type="hidden" name="return_ticket_id" id="bitacoraReturnTicketId">
             <div id="sourceTicketNotice" class="hidden mb-4 rounded-lg border border-green-100 bg-green-50 px-4 py-3 text-sm text-green-900"></div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div class="md:col-span-2">
                     <label class="block text-sm font-medium text-gray-700 mb-1">Asunto *</label>
                     <input type="text" name="title" id="bitacoraTitle" required class="w-full px-3 py-2 border border-gray-300 rounded-lg">

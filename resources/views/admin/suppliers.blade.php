@@ -3,7 +3,7 @@
 @section('title', 'Proveedores')
 
 @section('content')
-<div class="max-w-7xl mx-auto px-4">
+<div class="w-full max-w-none px-4 lg:px-6">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold">Proveedores</h1>
         <div class="flex flex-wrap justify-end gap-2">

@@ -8,6 +8,25 @@
         <h1 class="text-2xl font-bold mb-2">INGRESAR AL SISTEMA</h1>
         <p class="text-sm text-gray-600 mb-6">Accede para crear tickets, responder mensajes y revisar el estado de tus solicitudes.</p>
 
+        @error('ciudadania_digital')
+            <div class="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                {{ $message }}
+            </div>
+        @enderror
+
+        @if(config('services.ciudadania_digital.enabled'))
+            <a href="{{ route('ciudadania.redirect') }}" class="mb-5 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-green-600 px-4 py-2 font-semibold text-white hover:bg-green-700">
+                <i class="fas fa-id-card"></i>
+                Ingresar con Ciudadania Digital
+            </a>
+
+            <div class="mb-5 flex items-center gap-3 text-xs uppercase tracking-wide text-gray-400">
+                <span class="h-px flex-1 bg-gray-200"></span>
+                <span>o ingresa con tu cuenta local</span>
+                <span class="h-px flex-1 bg-gray-200"></span>
+            </div>
+        @endif
+
         <form method="POST" action="{{ secure_url('/login') }}" class="space-y-4">
             @csrf
             <div>

@@ -3,7 +3,53 @@
 @section('title', 'Ticket #' . $ticket->ticket_id)
 
 @section('content')
-<div class="max-w-5xl mx-auto px-4">
+<style>
+    .ticket-action-panel {
+        align-items: start;
+        display: grid;
+        gap: 1.5rem;
+        grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
+    }
+
+    .ticket-action-forms {
+        display: grid;
+        gap: 1rem;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+
+    .ticket-meta {
+        background: #f8fafc;
+        border: 1px solid #e5e7eb;
+        border-radius: .75rem;
+        padding: 1rem;
+    }
+
+    .ticket-meta p {
+        align-items: flex-start;
+        display: flex;
+        gap: .35rem;
+        line-height: 1.5;
+        margin-bottom: .35rem;
+    }
+
+    .ticket-meta strong {
+        color: #0f172a;
+        flex: 0 0 8.25rem;
+        white-space: nowrap;
+    }
+
+    @media (max-width: 1024px) {
+        .ticket-action-panel {
+            grid-template-columns: 1fr;
+        }
+
+        .ticket-meta strong {
+            flex-basis: 7.5rem;
+        }
+    }
+</style>
+
+<div class="w-full max-w-none px-4 lg:px-6">
     <div class="bg-white rounded-lg shadow mb-6">
         <div class="border-b px-6 py-4">
             <div class="flex justify-between items-start">
@@ -32,7 +78,8 @@
         <div class="p-6">
             @include('tickets.partials.rustdesk-panel')
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 pb-6 border-b">
+            <div class="ticket-action-panel mb-6 pb-6 border-b">
+                <div class="ticket-action-forms">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Cambiar Estado</label>
                     <form method="POST" action="{{ route('admin.ticket.status', $ticket) }}">
@@ -86,8 +133,9 @@
                         @endif
                     </div>
                 @endif
+                </div>
 
-                <div class="text-sm">
+                <div class="ticket-meta text-sm">
                     <p><strong>Prioridad:</strong>
                         <span class="px-2 py-1 text-xs rounded-full
                             @if($ticket->priority === 'urgent') bg-red-100 text-red-800

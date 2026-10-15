@@ -1256,6 +1256,46 @@ class AdminController extends Controller
         return view('admin.users', compact('users', 'offices', 'departments', 'roles'));
     }
 
+    public function exportUsers()
+    {
+        $this->authorizeAdmin();
+
+        $roles = [
+            "user" => "Funcionario",
+            "secretary_dti" => "Secretaria DTI",
+            "support" => "Soporte",
+            "admin" => "Administrador",
+        ];
+
+        $rows = User::with(["office", "supportDepartments"])
+            ->orderBy("name")
+            ->get()
+            ->map(fn (User $user) => [
+                $user->id,
+                $user->name,
+                $user->email,
+                $roles[$user->role] ?? $user->role,
+                $user->office?->name,
+                $user->office?->type,
+                $user->office?->location,
+                $user->isAdmin() ? "Todos" : $user->supportDepartments->pluck("name")->join(", "),
+                $user->telegram_chat_id,
+                $user->telegram_linked_at?->format("Y-m-d H:i:s"),
+                $user->rustdesk_id,
+                $user->rustdesk_alias,
+                $user->must_change_password ? "Temporal" : "Propia",
+                $user->password_changed_at?->format("Y-m-d H:i:s"),
+                $user->is_active ? "Activo" : "Inactivo",
+                $user->created_at?->format("Y-m-d H:i:s"),
+                $user->updated_at?->format("Y-m-d H:i:s"),
+            ])
+            ->all();
+
+        ActionLog::record("usuarios.exportados", null, "Planilla de funcionarios exportada.", ["total" => count($rows)]);
+
+        return $this->csvDownload("funcionarios_planilla.csv", $this->userCsvHeaders(), $rows);
+    }
+
     public function storeUser(Request $request): RedirectResponse
     {
         $this->authorizeAdmin();
@@ -1569,6 +1609,29 @@ class AdminController extends Controller
     private function supplierCsvHeaders(): array
     {
         return ['name', 'rif', 'contact_name', 'email', 'phone', 'address', 'notes', 'is_active'];
+    }
+
+    private function userCsvHeaders(): array
+    {
+        return [
+            'id_sistema',
+            'nombre',
+            'correo',
+            'rol',
+            'oficina',
+            'tipo_oficina',
+            'ubicacion_oficina',
+            'tipos_soporte_asignados',
+            'chat_id_telegram',
+            'telegram_vinculado_en',
+            'id_rustdesk',
+            'alias_rustdesk',
+            'tipo_contrasena',
+            'contrasena_cambiada_en',
+            'estado',
+            'creado_en',
+            'actualizado_en',
+        ];
     }
 
     private function csvDownload(string $filename, array $headers, array $rows)

@@ -22,6 +22,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'ciudadania_digital_sub',
         'password',
         'must_change_password',
         'password_changed_at',
@@ -36,6 +37,8 @@ class User extends Authenticatable
         'rustdesk_alias',
         'telegram_link_code',
         'telegram_linked_at',
+        'ciudadania_digital_last_login_at',
+        'ciudadania_digital_claims',
         'is_active',
     ];
 
@@ -63,6 +66,8 @@ class User extends Authenticatable
             'password_changed_at' => 'datetime',
             'is_active' => 'boolean',
             'telegram_linked_at' => 'datetime',
+            'ciudadania_digital_last_login_at' => 'datetime',
+            'ciudadania_digital_claims' => 'array',
         ];
     }
 
@@ -214,7 +219,14 @@ class User extends Authenticatable
 
         if ($this->isSupport()) {
             return (int) $ticket->assigned_to === (int) $this->id
-                || $this->handlesDepartment($ticket->department_id);
+                || $this->handlesDepartment($ticket->department_id)
+                || (
+                    $ticket->request_channel === 'digital'
+                    && (
+                        (int) $ticket->user_id === (int) $this->id
+                        || (int) $ticket->created_by_id === (int) $this->id
+                    )
+                );
         }
 
         if ($ticket->request_channel === 'physical') {

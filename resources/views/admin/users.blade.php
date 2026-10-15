@@ -11,17 +11,88 @@
     ['icon' => 'briefcase', 'color' => 'orange', 'class' => 'fa-briefcase bg-orange-100 text-orange-700'],
     ['icon' => 'seedling', 'color' => 'rose', 'class' => 'fa-seedling bg-rose-100 text-rose-700'],
 ])
-<div class="max-w-7xl mx-auto px-4">
-    <div class="flex justify-between items-center mb-6">
+
+<style>
+    .users-module {
+        max-width: none;
+        width: 100%;
+    }
+
+    .users-table-scroll {
+        overflow-x: auto;
+        width: 100%;
+    }
+
+    .users-table {
+        border-collapse: separate;
+        border-spacing: 0;
+        min-width: 1520px;
+        table-layout: auto;
+        width: 100%;
+    }
+
+    .users-table th,
+    .users-table td,
+    .users-table td *,
+    .users-table th * {
+        overflow-wrap: normal !important;
+        word-break: normal !important;
+    }
+
+    .users-table th {
+        padding: 1rem 1.25rem !important;
+        white-space: nowrap;
+    }
+
+    .users-table td {
+        padding: 1.25rem 1.25rem !important;
+        vertical-align: middle;
+    }
+
+    .users-table th:nth-child(1),
+    .users-table td:nth-child(1) { min-width: 230px; }
+    .users-table th:nth-child(2),
+    .users-table td:nth-child(2) { min-width: 190px; }
+    .users-table th:nth-child(3),
+    .users-table td:nth-child(3) { min-width: 130px; }
+    .users-table th:nth-child(4),
+    .users-table td:nth-child(4) { min-width: 230px; }
+    .users-table th:nth-child(5),
+    .users-table td:nth-child(5) { min-width: 180px; }
+    .users-table th:nth-child(6),
+    .users-table td:nth-child(6) { min-width: 130px; }
+    .users-table th:nth-child(7),
+    .users-table td:nth-child(7) { min-width: 150px; }
+    .users-table th:nth-child(8),
+    .users-table td:nth-child(8) { min-width: 140px; text-align: center; }
+    .users-table th:nth-child(9),
+    .users-table td:nth-child(9) { min-width: 130px; white-space: nowrap; }
+    .users-table th:nth-child(10),
+    .users-table td:nth-child(10) { min-width: 110px; text-align: center; }
+    .users-table th:nth-child(11),
+    .users-table td:nth-child(11) { min-width: 100px; white-space: nowrap; text-align: center; }
+
+    .users-table .rounded-full {
+        white-space: nowrap;
+    }
+</style>
+
+<div class="users-module w-full max-w-none px-4 lg:px-6">
+    <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 class="text-2xl font-bold">Gestionar Usuarios</h1>
-        <button onclick="showCreateUserModal()" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
-            <i class="fas fa-user-plus mr-2"></i>Nuevo Usuario
-        </button>
+        <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+            <a href="{{ route('admin.users.export') }}" class="inline-flex items-center justify-center rounded-lg border border-green-200 bg-green-50 px-4 py-2 font-medium text-green-700 hover:bg-green-100">
+                <i class="fas fa-file-excel mr-2"></i>Exportar planilla
+            </a>
+            <button onclick="showCreateUserModal()" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
+                <i class="fas fa-user-plus mr-2"></i>Nuevo Usuario
+            </button>
+        </div>
     </div>
 
     <div class="bg-white rounded-lg shadow overflow-hidden">
-        <div class="overflow-x-auto">
-            <table class="min-w-full">
+        <div class="users-table-scroll">
+            <table class="users-table">
                 <thead class="bg-gray-50">
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nombre</th>
@@ -128,7 +199,7 @@
                                 data-rustdesk-id="{{ e($user->rustdesk_id) }}"
                                 data-rustdesk-alias="{{ e($user->rustdesk_alias) }}"
                                 data-active="{{ $user->is_active ? '1' : '0' }}"
-                                onclick="editUser(this.dataset)"
+                                onclick="editUser(this.dataset, this)"
                                 class="text-blue-600 hover:text-blue-800 mr-3" title="Editar">
                                 <i class="fas fa-edit"></i>
                             </button>
@@ -148,8 +219,8 @@
     </div>
 </div>
 
-<div id="userModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50">
-    <div class="relative top-10 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white">
+<div id="userModal" class="hidden bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+    <div class="relative top-10 mx-auto p-5 border w-full max-w-6xl shadow-lg rounded-md bg-white">
         <div class="flex justify-between items-center mb-4">
             <h3 id="userModalTitle" class="text-lg font-medium">Nuevo Usuario</h3>
             <button onclick="closeUserModal()" class="text-gray-400 hover:text-gray-600" title="Cerrar">
@@ -162,8 +233,8 @@
             <input type="hidden" name="avatar_icon" id="userAvatarIcon" value="user">
             <input type="hidden" name="avatar_color" id="userAvatarColor" value="green">
             <input type="hidden" name="remove_avatar_image" id="removeAvatarImage" value="0">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="md:col-span-2 rounded-lg border border-gray-200 p-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="md:col-span-2 lg:col-span-4 rounded-lg border border-gray-200 p-4">
                     <label class="block text-sm font-medium text-gray-700 mb-3">Avatar</label>
                     <div class="flex flex-col gap-4 md:flex-row md:items-start">
                         <div class="flex items-center gap-3">
@@ -269,6 +340,72 @@
 
 @push('scripts')
 <script>
+    function resetUserModalPosition() {
+        var modal = document.getElementById('userModal');
+        var dialog = modal.querySelector('.relative');
+
+        ['display', 'align-items', 'justify-content', 'overflow', 'overflow-y', 'padding', 'position', 'inset', 'left', 'right', 'top', 'bottom'].forEach(function(property) {
+            modal.style.removeProperty(property);
+        });
+
+        if (dialog) {
+            ['animation', 'left', 'right', 'margin', 'max-height', 'overflow', 'overflow-y', 'position', 'top', 'transform', 'width'].forEach(function(property) {
+                dialog.style.removeProperty(property);
+            });
+        }
+    }
+
+    function applyUserModalPosition(top) {
+        var modal = document.getElementById('userModal');
+        var dialog = modal.querySelector('.relative');
+
+        modal.style.setProperty('display', 'block', 'important');
+        modal.style.setProperty('position', 'fixed', 'important');
+        modal.style.setProperty('inset', '0', 'important');
+        modal.style.setProperty('top', '0', 'important');
+        modal.style.setProperty('right', '0', 'important');
+        modal.style.setProperty('bottom', '0', 'important');
+        modal.style.setProperty('left', '0', 'important');
+        modal.style.setProperty('align-items', 'flex-start', 'important');
+        modal.style.setProperty('justify-content', 'flex-start', 'important');
+        modal.style.setProperty('overflow-y', 'auto', 'important');
+        modal.style.setProperty('padding', '0 1rem 1rem', 'important');
+
+        if (dialog) {
+            dialog.style.setProperty('animation', 'none', 'important');
+            dialog.style.setProperty('left', '50%', 'important');
+            dialog.style.setProperty('right', 'auto', 'important');
+            dialog.style.setProperty('margin', '0', 'important');
+            dialog.style.setProperty('max-height', 'none', 'important');
+            dialog.style.setProperty('overflow', 'visible', 'important');
+            dialog.style.setProperty('position', 'absolute', 'important');
+            dialog.style.setProperty('top', top + 'px', 'important');
+            dialog.style.setProperty('transform', 'translateX(-50%)', 'important');
+            dialog.style.setProperty('width', 'min(72rem, calc(100vw - 2rem))', 'important');
+        }
+    }
+
+    function openUserModal(anchor) {
+        var modal = document.getElementById('userModal');
+        var top = 40;
+
+        resetUserModalPosition();
+
+        if (anchor instanceof HTMLElement) {
+            var row = anchor.closest('tr');
+            var rect = (row || anchor).getBoundingClientRect();
+            top = Math.max(12, Math.round(rect.top));
+        }
+
+        modal.classList.remove('hidden');
+        modal.scrollTop = 0;
+        applyUserModalPosition(top);
+
+        window.requestAnimationFrame(function() {
+            applyUserModalPosition(top);
+        });
+    }
+
     function showCreateUserModal() {
         document.getElementById('userModalTitle').innerText = 'Nuevo Usuario';
         document.getElementById('userForm').action = "{{ route('admin.users.store') }}";
@@ -289,10 +426,10 @@
         document.getElementById('passwordHint').classList.add('hidden');
         document.getElementById('userActive').checked = true;
         syncDepartmentRequirement();
-        document.getElementById('userModal').classList.remove('hidden');
+        openUserModal();
     }
 
-    function editUser(user) {
+    function editUser(user, trigger) {
         document.getElementById('userModalTitle').innerText = 'Editar Usuario';
         document.getElementById('userForm').action = `{{ url('/admin/users') }}/${user.id}`;
         document.getElementById('userMethod').value = 'PUT';
@@ -312,11 +449,12 @@
         document.getElementById('passwordHint').classList.remove('hidden');
         document.getElementById('userActive').checked = user.active === '1';
         syncDepartmentRequirement();
-        document.getElementById('userModal').classList.remove('hidden');
+        openUserModal(trigger);
     }
 
     function closeUserModal() {
         document.getElementById('userModal').classList.add('hidden');
+        resetUserModalPosition();
     }
 
     function syncDepartmentRequirement() {
@@ -381,6 +519,12 @@
             option.selected = normalized.includes(option.value);
         });
     }
+
+    document.getElementById('userModal').addEventListener('click', function(event) {
+        if (event.target === this) {
+            closeUserModal();
+        }
+    });
 
     document.getElementById('userRole').addEventListener('change', syncDepartmentRequirement);
     document.getElementById('userAvatarImage').addEventListener('change', function(event) {
